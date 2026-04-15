@@ -843,12 +843,6 @@
                                     <span>Log Aktivitas</span>
                                 </a>
                             </li>
-                            <li class="menu-item">
-    <a href="{{ route('transactions') }}" class="menu-link">
-        <i class="fas fa-receipt"></i>
-        <span>Transaksi</span>
-    </a>
-</li>
                         </ul>
                     </div>
                     
@@ -914,12 +908,6 @@
                                     <span>Peminjaman</span>
                                 </a>
                             </li>
-                            <li class="menu-item">
-    <a href="{{ route('transactions') }}" class="menu-link">
-        <i class="fas fa-receipt"></i>
-        <span>Transaksi</span>
-    </a>
-</li>
                         </ul>
                     </div>
 

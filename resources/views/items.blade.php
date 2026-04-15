@@ -1,3 +1,13 @@
+@if($errors->any())
+    <div class="alert alert-error">
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,10 +22,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- CSRF Token untuk AJAX -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    
     <style>
+        /* ... (semua style sama seperti sebelumnya) ... */
         * {
             margin: 0;
             padding: 0;
@@ -34,7 +42,7 @@
             display: flex;
         }
 
-        /* Sidebar Styles */
+        /* Sidebar Styles - Sama seperti sebelumnya */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #fff5f5 0%, #ffe9e9 100%);
@@ -257,6 +265,20 @@
             color: white;
         }
 
+        .header-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M20,20 Q30,10 40,20 T60,20 T80,20" stroke="white" fill="none" stroke-width="0.5"/><path d="M20,40 Q35,30 50,40 T80,40" stroke="white" fill="none" stroke-width="0.5"/><path d="M20,60 Q40,50 60,60 T90,60" stroke="white" fill="none" stroke-width="0.5"/><circle cx="30" cy="75" r="2" fill="white"/><circle cx="50" cy="75" r="2" fill="white"/><circle cx="70" cy="75" r="2" fill="white"/></svg>');
+            background-repeat: repeat;
+            background-size: 150px 150px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
         .header-content {
             position: relative;
             z-index: 2;
@@ -316,11 +338,27 @@
             gap: 10px;
         }
 
+        .header-badge i {
+            color: white;
+        }
+
         /* Content Section */
         .content-section {
             padding: 40px 50px;
             background: #fffafa;
             position: relative;
+        }
+
+        .content-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at top right, #ffd9d9, transparent 70%);
+            opacity: 0.4;
+            border-radius: 0 0 0 200px;
         }
 
         /* Brand */
@@ -451,7 +489,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 800px;
         }
 
         thead {
@@ -492,12 +530,13 @@
             width: 60px;
         }
 
-        .harga-col {
+        /* Price styling */
+        .price-col {
             font-weight: 600;
             color: #d96b6b;
-            white-space: nowrap;
         }
 
+        /* Image styling */
         .product-image {
             width: 80px;
             height: 80px;
@@ -514,16 +553,57 @@
         }
 
         .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 10px;
+            border: 2px solid #ffd9d9;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #ffd9d9;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fffafa;
+        }
+
+        .image-upload-area:hover {
+            border-color: #ff8c8c;
+            background: #fff5f5;
+        }
+
+        .image-upload-area i {
+            font-size: 40px;
+            color: #ff8c8c;
+            margin-bottom: 10px;
+        }
+
+        .image-upload-area p {
+            color: #b88b9c;
+            font-size: 12px;
+        }
+
+        .current-image {
             margin-top: 15px;
             text-align: center;
         }
 
-        .image-preview img {
-            max-width: 150px;
-            max-height: 150px;
+        .current-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
             border-radius: 12px;
             border: 2px solid #ffd9d9;
-            object-fit: cover;
+        }
+
+        .current-image p {
+            font-size: 12px;
+            color: #b88b9c;
+            margin-top: 5px;
         }
 
         .action-buttons {
@@ -690,28 +770,19 @@
             box-shadow: 0 0 0 4px rgba(255, 140, 140, 0.1);
         }
 
-        .file-input-wrapper {
+        /* Price input styling */
+        .price-input {
             position: relative;
-            display: inline-block;
-            width: 100%;
         }
 
-        .file-input-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 18px;
-            background: #fff0f0;
-            border: 2px dashed #ffd9d9;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #d96b6b;
-        }
-
-        .file-input-label:hover {
-            background: #ffe5e5;
-            border-color: #ff8c8c;
+        .price-input::before {
+            content: 'Rp';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b88b9c;
+            font-size: 14px;
         }
 
         .modal-footer {
@@ -845,6 +916,7 @@
             }
         }
 
+        /* Decorative Line */
         .decor-line {
             position: absolute;
             bottom: 30px;
@@ -860,32 +932,14 @@
             border-radius: 2px;
         }
 
-        /* Loading Spinner */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
+        .decor-line span:nth-child(2) {
+            width: 20px;
+            opacity: 0.7;
         }
-        .loading-overlay.active {
-            display: flex;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #ffd9d9;
-            border-top-color: #ff8c8c;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        .decor-line span:nth-child(3) {
+            width: 10px;
+            opacity: 0.5;
         }
 
         /* Mobile Menu Button */
@@ -932,17 +986,21 @@
             border-radius: 16px;
         }
 
+        /* Responsive */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
+
             .sidebar.active {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0;
             }
+
             .mobile-menu-btn {
                 display: block;
             }
@@ -952,32 +1010,40 @@
             .content-section {
                 padding: 30px 20px;
             }
+
             .action-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .search-wrapper {
                 width: 100%;
             }
+
             .header-overlay {
                 padding: 0 30px;
             }
+
             .header-content h1 {
                 font-size: 32px;
             }
+
             .header-badge {
                 position: static;
                 margin-top: 20px;
+            }
+
+            th, td {
+                padding: 15px 12px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
-
     <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
@@ -995,6 +1061,7 @@
             </div>
         </div>
 
+        <!-- MAIN MENU Section -->
         <div class="menu-section">
             <div class="menu-title">MAIN MENU</div>
             <ul class="menu-items">
@@ -1016,15 +1083,10 @@
                         Peminjaman
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="{{ route('transactions') }}" class="menu-link">
-                        <i class="fas fa-history"></i>
-                        Transaksi
-                    </a>
-                </li>
             </ul>
         </div>
 
+        <!-- MANAJEMEN Section - Hanya untuk Admin -->
         @if(auth()->user()->role === 'admin')
         <div class="menu-section">
             <div class="menu-title">MANAJEMEN</div>
@@ -1044,6 +1106,7 @@
             </ul>
         </div>
         @elseif(auth()->user()->role === 'petugas')
+        <!-- MANAJEMEN Section - Petugas (tanpa List User) -->
         <div class="menu-section">
             <div class="menu-title">MANAJEMEN</div>
             <ul class="menu-items">
@@ -1057,6 +1120,7 @@
         </div>
         @endif
 
+        <!-- User Profile -->
         <div class="user-profile">
             <div class="user-avatar">
                 {{ substr(auth()->user()->name, 0, 1) }}
@@ -1077,6 +1141,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="inventaris-container">
+            <!-- Header Section -->
             <div class="header-section">
                 <img src="https://images.pexels.com/photos/6360764/pexels-photo-6360764.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
                      alt="Kebaya Collection">
@@ -1097,7 +1162,9 @@
                 </div>
             </div>
 
+            <!-- Content Section -->
             <div class="content-section">
+                <!-- Brand -->
                 <div class="brand">
                     <div class="brand-icon">
                         <i class="fas fa-chess-queen"></i>
@@ -1105,370 +1172,374 @@
                     <span class="brand-name">Réa Gallery - Manajemen Inventaris</span>
                 </div>
 
+                <!-- Action Bar - Hanya Admin dan Petugas yang bisa tambah -->
                 <div class="action-bar">
                     <div class="action-left">
-                        <h2>Daftar Koleksi Kebaya</h2>
-                        <button class="btn-tambah" id="btnTambah">
-                            <i class="fas fa-plus-circle"></i> Tambah Kebaya
+                        <h2>Daftar Kebaya</h2>
+                        @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                        <button class="btn-tambah" onclick="openModal('addModal')">
+                            <i class="fas fa-plus"></i>
+                            Tambah Kebaya
                         </button>
+                        @endif
                     </div>
                     <div class="search-wrapper">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" id="searchInput" placeholder="Cari kebaya...">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Cari kebaya...">
                     </div>
                 </div>
 
+                <!-- Table -->
                 <div class="table-container">
-                    <table id="kebayaTable">
+                    <table>
                         <thead>
-                            <tr><th>No</th><th>Nama Kebaya</th><th>Ukuran</th><th>Warna</th><th>Harga</th><th>Stok</th><th>Gambar</th><th>Aksi</th></tr>
+                            <tr>
+                                <th>No.</th>
+                                <th>Foto</th>
+                                <th>Nama Kebaya</th>
+                                <th>Deskripsi</th>
+                                <th>Harga</th>
+                                <th>Stok</th>
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                <th>Aksi</th>
+                                @endif
+                            </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="8" style="text-align:center;">Memuat data...</td></tr>
+                            @foreach ($items as $item)
+                            <tr>
+                                <td class="no-col">{{ $loop->iteration }}</td>
+                                <td>
+                                    @if($item->image && file_exists(public_path('images/' . $item->image)))
+                                        <img src="{{ asset('images/' . $item->image) }}" 
+                                             alt="{{ $item->name }}" 
+                                             class="product-image"
+                                             onclick="showImageModal(this.src)">
+                                    @else
+                                        <div style="width: 80px; height: 80px; background: #ffd9d9; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-tshirt" style="font-size: 32px; color: #ff8c8c;"></i>
+                                        </div>
+                                    @endif
+                                </td>
+                                <td><strong>{{ $item->name }}</strong></td>
+                                <td>{{ $item->description }}</td>
+                                <td class="price-col">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td>{{ $item->stock }} pcs</td>
+                                @if(in_array(auth()->user()->role, ['admin', 'petugas']))
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit" onclick="openEditModal({{ $item->id }})">
+                                            <i class="fas fa-edit"></i>
+                                            Edit
+                                        </button>
+                                        <button class="btn-delete" onclick="openDeleteModal({{ $item->id }})">
+                                            <i class="fas fa-trash"></i>
+                                            Hapus
+                                        </button>
+                                    </div>
+                                </td>
+                                @endif
+                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-                <div class="decor-line"><span></span><span></span><span></span></div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal Tambah/Edit -->
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Tambah Kebaya</h3>
-                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="itemId">
-                <div class="form-group"><label>Nama Kebaya</label><input type="text" id="namaKebaya" class="form-control" placeholder="Contoh: Kebaya Encim Brokat"></div>
-                <div class="form-group"><label>Ukuran</label><input type="text" id="ukuran" class="form-control" placeholder="Contoh: S, M, L, XL"></div>
-                <div class="form-group"><label>Warna</label><input type="text" id="warna" class="form-control" placeholder="Contoh: Merah, Biru, Hijau"></div>
-                <div class="form-group"><label>Harga (Rp)</label><input type="number" id="harga" class="form-control" placeholder="Contoh: 500000" min="0"></div>
-                <div class="form-group"><label>Stok</label><input type="number" id="stok" class="form-control" placeholder="Contoh: 10" min="0"></div>
-                <div class="form-group">
-                    <label>Upload Gambar</label>
-                    <div class="file-input-wrapper">
-                        <div class="file-input-label" onclick="document.getElementById('gambarFile').click()">
-                            <i class="fas fa-cloud-upload-alt"></i> <span>Pilih file gambar</span>
-                        </div>
-                        <input type="file" id="gambarFile" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                    </div>
-                    <div class="image-preview" id="imagePreviewContainer" style="display: none;">
-                        <img id="imagePreview" src="" alt="Preview Gambar">
-                    </div>
+                <!-- Decorative Line -->
+                <div class="decor-line">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-batal" onclick="closeModal()">Batal</button>
-                <button class="btn-simpan" onclick="simpanItem()">Simpan</button>
-            </div>
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Hapus -->
+    <!-- Modal Tambah -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle" style="color: #ff8c8c; margin-right: 10px;"></i>Tambah Kebaya Baru</h3>
+                <button class="modal-close" onclick="closeModal('addModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Kebaya</label>
+                        <input type="text" name="name" class="form-control" placeholder="Contoh: Kebaya Modern" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <input type="text" name="description" class="form-control" placeholder="Warna, bahan, ukuran" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga</label>
+                        <div class="price-input">
+                            <input type="number" name="price" class="form-control"  required min="0">
+                        </div>
+                        <small style="color: #b88b9c; font-size: 11px;">Contoh: 250000 untuk Rp 250.000</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Stok</label>
+                        <input type="number" name="stock" class="form-control" placeholder="Jumlah tersedia" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Foto Kebaya</label>
+                        <div class="image-upload-area" onclick="document.getElementById('addImageInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Klik untuk upload foto kebaya</p>
+                            <p style="font-size: 10px;">Format: JPG, PNG, JPEG (Max: 2MB)</p>
+                        </div>
+                        <input type="file" name="image" id="addImageInput" class="form-control" style="display: none;" accept="image/*" onchange="previewImage(this, 'addImagePreview')">
+                        <div id="addImagePreview" class="current-image" style="display: none;">
+                            <img id="addPreviewImg" src="" alt="Preview">
+                            <p>Preview Foto</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-batal" onclick="closeModal('addModal')">Batal</button>
+                    <button type="submit" class="btn-simpan">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    @foreach ($items as $item)
+    <div id="editModal-{{ $item->id }}" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit" style="color: #ff8c8c; margin-right: 10px;"></i>Edit Kebaya</h3>
+                <button class="modal-close" onclick="closeModal('editModal-{{ $item->id }}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form action="{{ route('items.update', $item->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nama Kebaya</label>
+                        <input type="text" name="name" class="form-control" value="{{ $item->name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <input type="text" name="description" class="form-control" value="{{ $item->description }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga</label>
+                        <div class="price-input">
+                            <input type="number" name="price" class="form-control" value="{{ $item->price }}" required min="0">
+                        </div>
+                        <small style="color: #b88b9c; font-size: 11px;">Harga saat ini: Rp {{ number_format($item->price, 0, ',', '.') }}</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Stok</label>
+                        <input type="number" name="stock" class="form-control" value="{{ $item->stock }}" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Foto Kebaya Saat Ini</label>
+                        @if($item->image && file_exists(public_path('images/' . $item->image)))
+                            <div class="current-image">
+                                <img src="{{ asset('images/' . $item->image) }}" alt="Current Image">
+                                <p>Foto saat ini</p>
+                            </div>
+                        @else
+                            <div class="current-image">
+                                <div style="width: 100px; height: 100px; background: #ffd9d9; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                    <i class="fas fa-tshirt" style="font-size: 48px; color: #ff8c8c;"></i>
+                                </div>
+                                <p>Belum ada foto</p>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <label>Ganti Foto (Opsional)</label>
+                        <div class="image-upload-area" onclick="document.getElementById('editImageInput-{{ $item->id }}').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Klik untuk upload foto baru</p>
+                            <p style="font-size: 10px;">Format: JPG, PNG, JPEG (Max: 2MB)</p>
+                        </div>
+                        <input type="file" name="image" id="editImageInput-{{ $item->id }}" class="form-control" style="display: none;" accept="image/*" onchange="previewImage(this, 'editImagePreview-{{ $item->id }}')">
+                        <div id="editImagePreview-{{ $item->id }}" class="current-image" style="display: none;">
+                            <img id="editPreviewImg-{{ $item->id }}" src="" alt="Preview">
+                            <p>Preview Foto Baru</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-batal" onclick="closeModal('editModal-{{ $item->id }}')">Batal</button>
+                    <button type="submit" class="btn-simpan">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endforeach
+
+    <!-- Modal Delete -->
     <div id="deleteModal" class="modal">
-        <div class="modal-content action-modal-content">
-            <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
-            <h3 style="color: #d96b6b;">Hapus Kebaya</h3>
-            <p>Apakah Anda yakin ingin menghapus kebaya ini?</p>
-            <div class="action-buttons-modal">
-                <button class="btn-batal" onclick="closeDeleteModal()">Batal</button>
-                <button class="btn-simpan" id="confirmDeleteBtn" style="background: #ff6666;">Hapus</button>
+        <div class="modal-content">
+            <div class="action-modal-content">
+                <div class="action-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 style="font-family: 'Playfair Display'; margin-bottom: 10px; color: #d96b6b;">Hapus Kebaya</h3>
+                <p style="color: #a15a5a; margin-bottom: 20px;">Apakah Anda yakin ingin menghapus kebaya ini? Tindakan ini tidak dapat dibatalkan.</p>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="action-buttons-modal">
+                        <button type="button" class="btn-batal" onclick="closeModal('deleteModal')">Batal</button>
+                        <button type="submit" class="btn-simpan" style="background: #ff6666;">Hapus</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal Preview Gambar -->
+    <!-- Image Modal for Fullscreen View -->
     <div id="imageModal" class="image-modal" onclick="closeImageModal()">
-        <img id="previewImage" src="" alt="Preview">
+        <img id="modalImage" src="" alt="Full Size Image">
     </div>
 
-    <!-- Alert Container -->
-    <div id="alertContainer"></div>
+    <!-- Alert -->
+    @if (session('success'))
+    <div class="alert alert-success" id="successAlert">
+        <div class="alert-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="alert-message">
+                <h4>Berhasil</h4>
+                <p>{{ session('success') }}</p>
+            </div>
+            <button style="background: none; border: none; color: #ff8c8c; cursor: pointer; font-size: 14px; margin-left: auto;" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    @endif
 
+    @if (session('error'))
+    <div class="alert alert-error" id="errorAlert">
+        <div class="alert-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <div class="alert-message">
+                <h4>Gagal</h4>
+                <p>{{ session('error') }}</p>
+            </div>
+            <button style="background: none; border: none; color: #ff6666; cursor: pointer; font-size: 14px; margin-left: auto;" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    @endif
+
+    <!-- JavaScript -->
     <script>
-        // CSRF Token untuk semua AJAX request
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
-        let items = [];
-        let currentId = null;
-        let deleteId = null;
-        let searchTerm = '';
-        let selectedFile = null;
-
-        // Helper functions
-        function formatRupiah(angka) {
-            return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            if (show) overlay.classList.add('active');
-            else overlay.classList.remove('active');
-        }
-
-        function showAlert(title, message, type) {
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.innerHTML = `<div class="alert-content"><i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><div class="alert-message"><h4>${title}</h4><p>${message}</p></div></div>`;
-            container.appendChild(alert);
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        // Preview gambar
-        function previewImage(input) {
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            const previewImg = document.getElementById('imagePreview');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewContainer.style.display = 'block';
-                    selectedFile = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                previewContainer.style.display = 'none';
-                selectedFile = null;
-            }
-        }
-
-        // LOAD DATA dari Database via API
-        async function loadItems() {
-            showLoading(true);
-            try {
-                const response = await fetch('/api/items', {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                if (!response.ok) throw new Error('Gagal memuat data');
-                items = await response.json();
-                renderTable();
-            } catch (error) {
-                showAlert('Error!', error.message, 'error');
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;">Gagal memuat data</td></tr>';
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Render tabel
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            const filteredItems = items.filter(item => 
-                item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.warna.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.ukuran.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            
-            if (filteredItems.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Tidak ada data kebaya</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = filteredItems.map((item, index) => `
-                <tr>
-                    <td class="no-col">${index + 1}</td>
-                    <td><strong>${escapeHtml(item.nama)}</strong></td>
-                    <td>${escapeHtml(item.ukuran)}</td>
-                    <td>${escapeHtml(item.warna)}</td>
-                    <td class="harga-col">${formatRupiah(item.harga)}</td>
-                    <td>${item.stok}</td>
-                    <td><img src="${item.gambar}" class="product-image" alt="${escapeHtml(item.nama)}" onclick="event.stopPropagation(); openImageModal('${item.gambar}')"></td>
-                    <td class="action-buttons">
-                        <button class="btn-edit" onclick="editItem(${item.id})"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn-delete" onclick="confirmDelete(${item.id})"><i class="fas fa-trash"></i> Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-
-        // Reset form modal
-        function resetModalForm() {
-            document.getElementById('itemId').value = '';
-            document.getElementById('namaKebaya').value = '';
-            document.getElementById('ukuran').value = '';
-            document.getElementById('warna').value = '';
-            document.getElementById('harga').value = '';
-            document.getElementById('stok').value = '';
-            document.getElementById('gambarFile').value = '';
-            document.getElementById('imagePreviewContainer').style.display = 'none';
-            document.getElementById('imagePreview').src = '';
-            selectedFile = null;
-        }
-
-        // Open modal tambah
-        document.getElementById('btnTambah').addEventListener('click', () => {
-            resetModalForm();
-            document.getElementById('modalTitle').innerText = 'Tambah Kebaya';
-            document.getElementById('itemModal').classList.add('active');
-        });
-
-        // Edit item
-        async function editItem(id) {
-            const item = items.find(i => i.id === id);
-            if (!item) return;
-            
-            resetModalForm();
-            document.getElementById('modalTitle').innerText = 'Edit Kebaya';
-            document.getElementById('itemId').value = item.id;
-            document.getElementById('namaKebaya').value = item.nama;
-            document.getElementById('ukuran').value = item.ukuran;
-            document.getElementById('warna').value = item.warna;
-            document.getElementById('harga').value = item.harga;
-            document.getElementById('stok').value = item.stok;
-            
-            if (item.gambar && !item.gambar.includes('data:image/svg')) {
-                document.getElementById('imagePreviewContainer').style.display = 'block';
-                document.getElementById('imagePreview').src = item.gambar;
-                selectedFile = item.gambar;
-            }
-            
-            document.getElementById('itemModal').classList.add('active');
-        }
-
-        // Simpan item (Tambah/Edit) ke DATABASE via API
-        async function simpanItem() {
-            const id = document.getElementById('itemId').value;
-            const nama = document.getElementById('namaKebaya').value.trim();
-            const ukuran = document.getElementById('ukuran').value.trim();
-            const warna = document.getElementById('warna').value.trim();
-            const harga = parseInt(document.getElementById('harga').value) || 0;
-            const stok = parseInt(document.getElementById('stok').value) || 0;
-            
-            if (!nama) {
-                showAlert('Gagal!', 'Nama kebaya harus diisi!', 'error');
-                return;
-            }
-            
-            const data = { nama, ukuran, warna, harga, stok, gambar: selectedFile || '' };
-            
-            showLoading(true);
-            try {
-                let url = '/api/items';
-                let method = 'POST';
-                if (id) {
-                    url = `/api/items/${id}`;
-                    method = 'PUT';
-                }
-                
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    showAlert('Berhasil!', result.message, 'success');
-                    closeModal();
-                    await loadItems(); // Reload dari database
-                } else {
-                    showAlert('Gagal!', result.message, 'error');
-                }
-            } catch (error) {
-                showAlert('Error!', 'Terjadi kesalahan: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Konfirmasi hapus
-        function confirmDelete(id) {
-            deleteId = id;
-            document.getElementById('deleteModal').classList.add('active');
-        }
-
-        // Hapus item dari DATABASE
-        async function deleteItem() {
-            if (!deleteId) return;
-            
-            showLoading(true);
-            try {
-                const response = await fetch(`/api/items/${deleteId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    showAlert('Berhasil!', result.message, 'success');
-                    closeDeleteModal();
-                    await loadItems(); // Reload dari database
-                } else {
-                    showAlert('Gagal!', result.message, 'error');
-                }
-            } catch (error) {
-                showAlert('Error!', 'Gagal menghapus: ' + error.message, 'error');
-            } finally {
-                showLoading(false);
-                deleteId = null;
-            }
-        }
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', deleteItem);
-        
-        // Search
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            searchTerm = e.target.value;
-            renderTable();
-        });
-
-        // Close modals
-        function closeModal() {
-            document.getElementById('itemModal').classList.remove('active');
-            resetModalForm();
-        }
-        
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('active');
-        }
-        
-        function openImageModal(src) {
-            const modal = document.getElementById('imageModal');
-            document.getElementById('previewImage').src = src;
-            modal.classList.add('active');
-        }
-        
-        function closeImageModal() {
-            document.getElementById('imageModal').classList.remove('active');
-        }
-        
+        // Sidebar toggle for mobile
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
         }
-        
+
+        // Close sidebar when clicking outside on mobile
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const mobileBtn = document.querySelector('.mobile-menu-btn');
-            if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+            
+            if (window.innerWidth <= 1024) {
                 if (!sidebar.contains(event.target) && !mobileBtn.contains(event.target)) {
                     sidebar.classList.remove('active');
                 }
             }
         });
-        
-        // Load data saat halaman siap
-        document.addEventListener('DOMContentLoaded', loadItems);
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openEditModal(itemId) {
+            openModal('editModal-' + itemId);
+        }
+
+        function openDeleteModal(itemId) {
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = "{{ url('items') }}/" + itemId;
+            openModal('deleteModal');
+        }
+
+        // Image preview function
+        function previewImage(input, previewId) {
+            const previewDiv = document.getElementById(previewId);
+            const previewImg = previewDiv.querySelector('img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Show full image modal
+        function showImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imageSrc;
+            modal.classList.add('active');
+        }
+
+        // Close image modal
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const tableBody = document.getElementById('tableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                Array.from(rows).forEach(row => {
+                    const productName = row.cells[2]?.textContent.toLowerCase() || '';
+                    if (productName.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Auto-hide alerts
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 4000);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
     </script>
 </body>
 </html>

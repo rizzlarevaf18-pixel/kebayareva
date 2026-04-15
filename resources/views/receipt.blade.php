@@ -48,7 +48,7 @@
 <body>
     <div class="receipt">
         <div class="receipt-header">
-            <h1>LENTORA</h1>
+            <h1>REA GALLERY</h1>
             <p>Sistem Peminjaman Kebaya</p>
             <p>Jl. Merdeka No. 123, Jakarta</p>
             <p>Telp: (021) 1234567</p>
@@ -298,7 +298,7 @@
                     <div class="bank-info">
                         <p style="font-size: 9px; color: #475569;">🏦 Bank BCA / Mandiri / BRI</p>
                         <p style="font-size: 11px; font-weight: bold; letter-spacing: 1px; margin-top: 4px;">1234-5678-9012-3456</p>
-                        <p style="font-size: 9px; color: #475569; margin-top: 2px;">a.n. LENTORA OFFICIAL</p>
+                        <p style="font-size: 9px; color: #475569; margin-top: 2px;">a.n. REA GALLERY</p>
                     </div>
                 </div>
                 @endif

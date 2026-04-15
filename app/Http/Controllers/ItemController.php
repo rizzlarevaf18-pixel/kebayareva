@@ -3,206 +3,158 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
     /**
-     * Menampilkan daftar barang (index)
+     * Display a listing of the resource.
      */
     public function index()
     {
-        // Cek apakah user sudah login
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-        
-        // Cek apakah user memiliki akses (admin atau petugas)
-        $userRole = Auth::user()->role;
-        if (!in_array($userRole, ['admin', 'petugas'])) {
-            return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini!');
-        }
-        
         $items = Item::all();
         return view('items', compact('items'));
     }
 
     /**
-     * Menampilkan form tambah barang
+     * Show the form for creating a new resource.
      */
     public function create()
     {
-        // Cek akses
-        if (!in_array(Auth::user()->role, ['admin', 'petugas'])) {
-            return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses!');
-        }
-        
-        return view('items-create');
+        // Tidak digunakan karena pakai modal
     }
 
     /**
-     * Menyimpan barang baru (store)
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // Validasi input
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'stock' => 'required|integer|min:1',
-            'price' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
-
-        $data = $request->only(['name', 'description', 'stock', 'price']);
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            
-            if (!file_exists(public_path('images'))) {
-                mkdir(public_path('images'), 0755, true);
-            }
-            
-            $image->move(public_path('images'), $imageName);
-            $data['image'] = $imageName;
-        }
-
-        $item = Item::create($data);
+        // Debug: Log data yang masuk
+        Log::info('Store method called');
+        Log::info('Request data:', $request->all());
         
-        // Catat log
-        Log::create([
-            'user_id' => Auth::id(),
-            'item_id' => $item->id,
-            'action' => 'create',
-            'description' => 'Menambahkan item: ' . $item->name,
-            'ip_address' => $request->ip(),
-        ]);
+        try {
+            // Validasi data
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            ]);
 
-        return redirect()->route('items')->with('success', 'Barang berhasil ditambahkan.');
+            // Buat item baru
+            $item = new Item();
+            $item->name = $request->name;
+            $item->description = $request->description;
+            $item->price = $request->price;
+            $item->stock = $request->stock;
+
+            // Upload image jika ada
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images'), $imageName);
+                $item->image = $imageName;
+            }
+
+            $item->save();
+            
+            Log::info('Item saved successfully. ID: ' . $item->id);
+
+            return redirect()->route('items')->with('success', 'Kebaya berhasil ditambahkan!');
+            
+        } catch (\Exception $e) {
+            Log::error('Error in store method: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->with('error', 'Gagal menambahkan kebaya: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
-     * Menampilkan form edit barang
+     * Display the specified resource.
      */
-    public function edit($id)
+    public function show(string $id)
     {
-        // Cek akses
-        if (!in_array(Auth::user()->role, ['admin', 'petugas'])) {
-            return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses!');
-        }
-        
-        $item = Item::findOrFail($id);
-        return view('items-edit', compact('item'));
+        //
     }
 
     /**
-     * Mengupdate barang (update)
+     * Show the form for editing the specified resource.
      */
-    public function update(Request $request, $id)
+    public function edit(string $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'stock' => 'required|integer|min:1',
-            'price' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
-
-        $item = Item::findOrFail($id);
-        $data = $request->only(['name', 'description', 'stock', 'price']);
-
-        // Handle image upload jika ada file baru
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($item->image && file_exists(public_path('images/' . $item->image))) {
-                unlink(public_path('images/' . $item->image));
-            }
-            
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            
-            if (!file_exists(public_path('images'))) {
-                mkdir(public_path('images'), 0755, true);
-            }
-            
-            $image->move(public_path('images'), $imageName);
-            $data['image'] = $imageName;
-        }
-
-        $item->update($data);
-        
-        // Catat log
-        Log::create([
-            'user_id' => Auth::id(),
-            'item_id' => $item->id,
-            'action' => 'update',
-            'description' => 'Mengupdate item: ' . $item->name,
-            'ip_address' => $request->ip(),
-        ]);
-
-        return redirect()->route('items')->with('success', 'Barang berhasil diperbarui.');
+        // Tidak digunakan karena pakai modal
     }
 
     /**
-     * Menghapus barang (destroy)
+     * Update the specified resource in storage.
      */
-    public function destroy($id)
+    public function update(Request $request, string $id)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            ]);
+
+            $item = Item::findOrFail($id);
+            $item->name = $request->name;
+            $item->description = $request->description;
+            $item->price = $request->price;
+            $item->stock = $request->stock;
+
+            if ($request->hasFile('image')) {
+                // Hapus gambar lama
+                if ($item->image && file_exists(public_path('images/' . $item->image))) {
+                    unlink(public_path('images/' . $item->image));
+                }
+                
+                // Upload gambar baru
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images'), $imageName);
+                $item->image = $imageName;
+            }
+
+            $item->save();
+
+            return redirect()->route('items')->with('success', 'Kebaya berhasil diupdate!');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Gagal mengupdate kebaya: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
         try {
             $item = Item::findOrFail($id);
             
-            // Hapus file gambar jika ada
+            // Hapus gambar
             if ($item->image && file_exists(public_path('images/' . $item->image))) {
                 unlink(public_path('images/' . $item->image));
             }
             
-            // Catat log sebelum hapus
-            Log::create([
-                'user_id' => Auth::id(),
-                'item_id' => $id,
-                'action' => 'delete',
-                'description' => 'Menghapus item: ' . $item->name,
-                'ip_address' => request()->ip(),
-            ]);
-
             $item->delete();
-            return redirect()->route('items')->with('success', 'Barang berhasil dihapus.');
+
+            return redirect()->route('items')->with('success', 'Kebaya berhasil dihapus!');
+            
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat menghapus barang: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus kebaya: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Handle method untuk kompatibilitas (opsional)
-     */
-    public function handle(Request $request, $itemId = null)
-    {
-        // Cek akses
-        if (!in_array(Auth::user()->role, ['admin', 'petugas'])) {
-            return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses!');
-        }
-        
-        if ($request->isMethod('get') && !$itemId) {
-            $items = Item::all();
-            return view('items', compact('items'));
-        }
-
-        if ($request->isMethod('post')) {
-            return $this->store($request);
-        }
-
-        if ($request->isMethod('put') && $itemId) {
-            return $this->update($request, $itemId);
-        }
-
-        if ($request->isMethod('delete') && $itemId) {
-            return $this->destroy($itemId);
-        }
-
-        return back()->with('error', 'Aksi tidak diizinkan.');
     }
 }

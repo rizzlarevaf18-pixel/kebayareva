@@ -442,7 +442,7 @@
                         </td>
                         <td>
                             <div class="flex flex-col gap-2">
-                                <a href="{{ route('transactions.receipt', $loan->id) }}" class="btn-print">
+                                <a href="{{ route('loans.receipt', $loan->id) }}" class="btn-print">
                                     <i class="fas fa-print"></i> Cetak
                                 </a>
                                 @foreach($pendingFines as $fine)

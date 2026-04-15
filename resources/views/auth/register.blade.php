@@ -16,8 +16,10 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    {{-- Link Laravel --}}
-    <link href="{{ mix('resources/css/app.css') }}" rel="stylesheet">
+    {{-- Gunakan asset biasa jika file CSS ada --}}
+@if(file_exists(public_path('css/app.css')))
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+@endif
     
     <style>
         * {

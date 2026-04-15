@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\Loan;
 use App\Models\Log;
 use App\Models\Fine;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -202,82 +203,43 @@ class LoanController extends Controller
      * Ambil data struk pengembalian
      */
     public function getReceipt($id)
-    {
-        try {
-            $loan = Loan::with('item', 'user', 'fines')->findOrFail($id);
+{
+    try {
+        $loan = Loan::with('item', 'user', 'fines')->findOrFail($id);
 
-            // Mapping kondisi ke teks
-            $conditionText = '';
-            switch ($loan->return_condition) {
-                case 'good':
-                    $conditionText = 'Baik';
-                    break;
-                case 'light_damage':
-                    $conditionText = 'Kerusakan Ringan';
-                    break;
-                case 'heavy_damage':
-                    $conditionText = 'Kerusakan Berat';
-                    break;
-                case 'lost':
-                    $conditionText = 'Hilang';
-                    break;
-                default:
-                    $conditionText = '-';
-            }
-
-            // Generate transaction number jika belum ada
-            if (!$loan->transaction_number) {
-                $loan->transaction_number = 'TRX-' . time() . '-' . $loan->id;
-                $loan->save();
-            }
-
-            // Ambil daftar denda dari tabel fines
-            $finesList = [];
-            foreach ($loan->fines as $fine) {
-                $typeText = '';
-                switch ($fine->fine_type) {
-                    case 'late': $typeText = 'Denda Keterlambatan'; break;
-                    case 'damage': $typeText = 'Denda Kerusakan'; break;
-                    case 'lost': $typeText = 'Denda Kehilangan'; break;
-                    default: $typeText = ucfirst($fine->fine_type);
-                }
-                
-                $finesList[] = [
-                    'type' => $fine->fine_type,
-                    'type_text' => $typeText,
-                    'amount' => (float) $fine->amount,
-                    'status' => $fine->status,
-                    'description' => $fine->description,
-                ];
-            }
-
-            return response()->json([
-                'success' => true,
-                'receipt' => [
-                    'transaction_number' => $loan->transaction_number,
-                    'date' => Carbon::parse($loan->actual_return_date ?? $loan->updated_at)->format('d/m/Y H:i'),
-                    'borrower_name' => $loan->user->name ?? 'User tidak ditemukan',
-                    'item_name' => $loan->item->name ?? 'Barang tidak ditemukan',
-                    'amount' => $loan->amount,
-                    'borrow_date' => Carbon::parse($loan->borrow_date)->format('d/m/Y'),
-                    'return_date' => Carbon::parse($loan->return_date)->format('d/m/Y'),
-                    'condition_text' => $conditionText,
-                    'damage_description' => $loan->damage_description ?? '-',
-                    'late_fee' => (float) ($loan->late_fee ?? 0),
-                    'damage_fine' => (float) ($loan->damage_fine ?? 0),
-                    'total_fine' => (float) ($loan->total_fine ?? 0),
-                    'payment_method' => $loan->payment_method ?? 'cash',
-                    'transfer_reference' => $loan->transfer_reference ?? null,
-                    'fines_list' => $finesList,
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memuat struk: ' . $e->getMessage()
-            ], 500);
+        // Mapping kondisi ke teks
+        $conditionText = '';
+        switch ($loan->return_condition) {
+            case 'good':
+                $conditionText = 'Baik';
+                break;
+            case 'light_damage':
+                $conditionText = 'Kerusakan Ringan';
+                break;
+            case 'heavy_damage':
+                $conditionText = 'Kerusakan Berat';
+                break;
+            case 'lost':
+                $conditionText = 'Hilang';
+                break;
+            default:
+                $conditionText = '-';
         }
+
+        // Hitung total denda
+        $totalFine = 0;
+        foreach ($loan->fines as $fine) {
+            if ($fine->status !== 'waived') {
+                $totalFine += (float) $fine->amount;
+            }
+        }
+
+        return view('receipt', compact('loan', 'conditionText', 'totalFine'));
+        
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Gagal memuat struk: ' . $e->getMessage());
     }
+}
 
     /**
      * Approve peminjaman (jika diperlukan)

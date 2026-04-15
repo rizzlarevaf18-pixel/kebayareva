@@ -10,7 +10,7 @@
             <div class="p-6">
                 <!-- Header -->
                 <div class="text-center border-b pb-4">
-                    <h1 class="text-2xl font-bold text-gray-800">LENTORA</h1>
+                    <h1 class="text-2xl font-bold text-gray-800">REA GALLERY</h1>
                     <p class="text-sm text-gray-600">Sistem Peminjaman Barang</p>
                     <p class="text-xs text-gray-500">Jl. Contoh No. 123, Kota Contoh</p>
                     <p class="text-xs text-gray-500">Telp: (021) 1234567</p>
@@ -90,10 +90,10 @@
                 
                 <!-- Footer -->
                 <div class="mt-6 text-center text-xs text-gray-500 border-t pt-4">
-                    <p>Terima kasih telah berbelanja di Lentora</p>
+                    <p>Terima kasih telah berbelanja di REA GALLERY</p>
                     <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
                     <p class="mt-2">Simpan struk ini sebagai bukti pembayaran</p>
-                    <p class="mt-2 text-gray-400">=== Lentora ===</p>
+                    <p class="mt-2 text-gray-400">=== REA GALLERY ===</p>
                 </div>
             </div>
         </div>
